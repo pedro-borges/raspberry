@@ -1,0 +1,13 @@
+export black="\e[30m"
+export red="\e[31m"
+export green="\e[32m"
+export yellow="\e[33m"
+export blue="\e[34m"
+export magenta="\e[35m"
+export cyan="\e[36m"
+export white="\e[37m"
+
+export begin=$green
+export reset="\e[0m\n"
+
+export test="test123"
