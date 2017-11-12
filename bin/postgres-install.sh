@@ -47,13 +47,17 @@ ${info} ${host} "Installing PostgreSQL"
 ${login} "sudo apt-get -o Acquire::ForceIPv4=true install postgresql-${postgres_version} -y"
 
 # Check for postgres local network access
-pg_hba=${run_dir}/../root/etc/postgresql/main/pg_hba.conf
-${login} "sudo cat /etc/postgresql/${postgres_version}/main/pg_hba.conf" | grep -q "$(head -n 1 ${pg_hba})"
+pg_hba=${root_dir}/etc/postgresql/main/pg_hba.conf
+postgres_hba="/etc/postgresql/${postgres_version}/main/pg_hba.conf"
+${login} "sudo cat ${postgres_hba}" | grep -q "$(head -n 1 ${pg_hba})"
 if [ $? != 0 ]; then
 	${info} ${host} "Configuring postgres"
 
+	# Backup configuration
+	${login} "sudo cp -n ${postgres_hba} ${postgres_hba}.bak"
+
 	# Configure postgres local network access
-	cat ${pg_hba} | ${login} "sudo tee -a /etc/postgresql/${postgres_version}/main/pg_hba.conf > /dev/null"
+	cat ${pg_hba} | ${login} "sudo tee -a ${postgres_hba} > /dev/null"
 fi
 
 # Change permissions for postgres directory
