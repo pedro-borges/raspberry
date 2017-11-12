@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+export current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export base_dir="${current_dir%/*}"
 export conf_dir="${base_dir}/conf"
 export bin_dir="${base_dir}/bin"
 export boot_dir="${base_dir}/boot"
