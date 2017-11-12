@@ -4,7 +4,7 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 # Check parameters
 if [ ! $# -eq 2 ]; then
-    echo "Use $0 <user> <host>"
+    ${error} "Use ${script_name} <user> <host>"
     exit -1
 fi
 

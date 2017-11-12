@@ -14,23 +14,20 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 # Check parameters
 if [ ! $# -eq 1 ]; then
     ${error} "Use sudo ${script_name} <volume>"
-    echo $0 "disk2 for /dev/disk2"
     exit -1
 fi
 
 # Check if run with sudo
 if [ $(id -u) != 0 ]; then
-echo ${error} "Needs super-user privileges"
-    ${error} "Needs super-user privileges"
-    echo "Use sudo ${script_name} <volume>"
+    ${error} "Use sudo ${script_name} <volume>"
 	exit -1
 fi
 
-disk=/dev/$1
+disk=$1
 
 # Check if volume is present
 if [ ! -b ${disk} ]; then
-    ${error} "Volume $1 is not connected"
+    ${error} "Volume $1 does not exist"
     exit -1
 fi
 

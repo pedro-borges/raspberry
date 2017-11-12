@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../conf/environment
+
 # Check parameters
 if [ $# -lt 2 ]; then
-    echo "Use $0 [colour] <host> <message>"
+    ${error} "Use ${script_name} [colour] <host> <message>"
     exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../conf/environment
 
 if [ $# -eq 2 ]; then
 	printf "${1}${2}${reset}"

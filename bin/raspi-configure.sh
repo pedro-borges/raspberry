@@ -4,7 +4,7 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 # Check parameters
 if [ ! $# -eq 1 ]; then
-    echo "Use $0 <host>"
+    ${error} "Use ${script_name} <host>"
     exit -1
 fi
 
@@ -13,6 +13,10 @@ login="ssh pi@${host}.local"
 
 # Setup passwordless login for user pi
 ${bin_dir}/raspi-configure-ssh.sh pi ${host}
+
+# Add data directory
+${info} ${host} "Creating data directory in /data for external volume"
+${login} "sudo mkdir -p /data; sudo chmod 1777 /data"
 
 # Disable IPv6
 ${login} "cat /etc/sysctl.conf" | grep -q "$(head -n 3 ${root_dir}/etc/sysctl.conf | tail -n 1)"

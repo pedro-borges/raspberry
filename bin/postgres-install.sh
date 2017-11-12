@@ -4,30 +4,23 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 # Check parameters
 if [ ! $# -eq 2 ]; then
-    echo "Use $0 <host> <volume>"
+    ${error} "Use ${script_name} <host> <volume>"
     exit -1
 fi
 
 host=$1
+volume=/dev/$2
 login="ssh pi@${host}.local"
 postgres_version="9.6"
+data_directory=/data
 
 # Check if the external hd is in the fstab
-data_directory=/data
-volume=/dev/$2
-fstab="${volume}1	${data_directory}	ext4	defaults	0	3"
 ${login} "cat /etc/fstab" | grep -q "${volume}1"
 if [ $? != 0 ]; then
 	${info} ${host} "Mounting ${volume}1 under ${data_directory}"
 
-	# Create mount point
-	${login} "sudo mkdir -p ${data_directory}"
-
-	# Setup access rights
-	${login} "sudo chmod 1777 ${data_directory}"
-
 	# Add external hd to fstab
-    echo ${fstab} | ${login} "sudo tee -a /etc/fstab > /dev/null"
+    echo "${volume}1	${data_directory}	ext4	defaults	0	3" | ${login} "sudo tee -a /etc/fstab > /dev/null"
 
     # Manually mount external hd
 	${login} "sudo mount /dev/sda1"
@@ -61,8 +54,8 @@ if [ $? != 0 ]; then
 fi
 
 # Change permissions for postgres directory
-${login} "chown postgres:postgres /data/postgres"
-${login} "chmod 700 /data/postgres"
+${login} "sudo chown postgres:postgres /data/postgres"
+${login} "sudo chmod 700 /data/postgres"
 
 # Start postgres
 ${login} "sudo service postgresql start"

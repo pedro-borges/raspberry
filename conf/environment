@@ -25,7 +25,9 @@ export warn="${bin_dir}/commands/log.sh ${yellow}"
 export error="${bin_dir}/commands/log.sh ${red}"
 
 # Helpers
-script_name=${0##*/}
+export script_name=${0##*/}
 
 # System files
-file_sources_list="/etc/apt/sources.list"
+export data_dir="/data"
+export file_sources_list="/etc/apt/sources.list"
+

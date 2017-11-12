@@ -8,7 +8,7 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 # Check parameters
 if [ ! $# -eq 1 ]; then
-    echo "Use $0 <host>"
+    echo "Use ${script_name} <host>"
     exit -1
 fi
 
