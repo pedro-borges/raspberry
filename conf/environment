@@ -1,3 +1,4 @@
+# ANSI colours
 export black="\e[30m"
 export red="\e[31m"
 export green="\e[32m"
@@ -7,7 +8,19 @@ export magenta="\e[35m"
 export cyan="\e[36m"
 export white="\e[37m"
 
-export begin=$green
+# Script colours
+export debug=${black}
+export info=$green
+export warn=$yellow
+export error=$red
 export reset="\e[0m\n"
 
-export test="test123"
+# Helpers
+script_name=${0##*/}
+
+# System files
+file_sources_list="/etc/apt/sources.list"
+
+for host in $(cat $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/farm); do
+	alias ${host}="ssh pi@${host}.local"
+done
