@@ -22,15 +22,10 @@ export reset="\e[0m\n"
 export debug="${bin_dir}/commands/log.sh ${black}"
 export info="${bin_dir}/commands/log.sh ${green}"
 export warn="${bin_dir}/commands/log.sh ${yellow}"
-export error="${bin_dir}/commands/log.sh ${blue}"
+export error="${bin_dir}/commands/log.sh ${red}"
 
 # Helpers
 script_name=${0##*/}
 
 # System files
 file_sources_list="/etc/apt/sources.list"
-
-# Aliases
-for host in $(cat ${conf_dir}/farm); do
-	alias ${host}="ssh pi@${host}.local"
-done

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 # Check parameters
 if [ ! $# -eq 2 ]; then
     echo "Use $0 <host> <volume>"
     exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 host=$1
 login="ssh pi@${host}.local"
@@ -50,7 +50,7 @@ ${login} "sudo apt-get -o Acquire::ForceIPv4=true install postgresql-${postgres_
 pg_hba=${run_dir}/../root/etc/postgresql/main/pg_hba.conf
 ${login} "sudo cat /etc/postgresql/${postgres_version}/main/pg_hba.conf" | grep -q "$(head -n 1 ${pg_hba})"
 if [ $? != 0 ]; then
-	${info} ${host} "Configuring local network access to postgres"
+	${info} ${host} "Configuring postgres"
 
 	# Configure postgres local network access
 	cat ${pg_hba} | ${login} "sudo tee -a /etc/postgresql/${postgres_version}/main/pg_hba.conf > /dev/null"

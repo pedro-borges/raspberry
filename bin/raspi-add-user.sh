@@ -4,13 +4,13 @@
 # Create a user and group if they don't exist and configure passwordless login
 #
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 # Check parameters
 if [ ! $# -eq 3 ]; then
     echo "Use $0 <user> <group> <host>"
     exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 user=$1
 group=$2

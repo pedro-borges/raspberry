@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 # Check parameters
 if [ ! $# -eq 1 ]; then
     echo "Use $0 <host>"
     exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 host=$1
 login="ssh pi@${host}.local"

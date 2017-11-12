@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 # Check parameters
 if [ ! $# -eq 2 ]; then
     echo "Use $0 <user> <host>"
     exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 user=$1
 host=$2

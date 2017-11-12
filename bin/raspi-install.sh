@@ -9,6 +9,8 @@
 # wi-fi
 #
 
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 # Check parameters
 if [ ! $# -eq 1 ]; then
     ${error} "Use sudo ${script_name} <volume>"
@@ -18,12 +20,11 @@ fi
 
 # Check if run with sudo
 if [ $(id -u) != 0 ]; then
+echo ${error} "Needs super-user privileges"
     ${error} "Needs super-user privileges"
     echo "Use sudo ${script_name} <volume>"
 	exit -1
 fi
-
-source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 disk=/dev/$1
 
