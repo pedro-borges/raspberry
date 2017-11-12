@@ -1,3 +1,11 @@
+#!/usr/bin/env bash
+
+export base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+export conf_dir="${base_dir}/conf"
+export bin_dir="${base_dir}/bin"
+export boot_dir="${base_dir}/boot"
+export root_dir="${base_dir}/root"
+
 # ANSI colours
 export black="\e[30m"
 export red="\e[31m"
@@ -7,13 +15,13 @@ export blue="\e[34m"
 export magenta="\e[35m"
 export cyan="\e[36m"
 export white="\e[37m"
-
-# Script colours
-export debug=${black}
-export info=$green
-export warn=$yellow
-export error=$red
 export reset="\e[0m\n"
+
+# Log levels
+export debug="${bin_dir}/commands/log.sh ${black}"
+export info="${bin_dir}/commands/log.sh ${green}"
+export warn="${bin_dir}/commands/log.sh ${yellow}"
+export error="${bin_dir}/commands/log.sh ${blue}"
 
 # Helpers
 script_name=${0##*/}
@@ -21,6 +29,7 @@ script_name=${0##*/}
 # System files
 file_sources_list="/etc/apt/sources.list"
 
-for host in $(cat $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/farm); do
+# Aliases
+for host in $(cat ${conf_dir}/farm); do
 	alias ${host}="ssh pi@${host}.local"
 done

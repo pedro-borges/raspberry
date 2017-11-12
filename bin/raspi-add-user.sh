@@ -10,25 +10,25 @@ if [ ! $# -eq 3 ]; then
     exit -1
 fi
 
-run_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source ${run_dir}/../conf/environment
+source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
+
 user=$1
 group=$2
 host=$3
-login=pi@${host}.local
+login="ssh pi@${host}.local"
 
 # Create group
-ssh -q ${login} "getent group ${group}"
+${login} -q "getent group ${group}"
 if [ $? != 0 ]; then
-	printf "${info}[${host}] Creating group for ${group}${reset}"
-	ssh ${login} "sudo addgroup ${group}"
+	${info} ${host} "Creating group for ${group}"
+	${login} "sudo addgroup ${group}"
 fi
 
 # Create user
-ssh -q ${login} "id -u ${user}"
+${login} -q "id -u ${user}"
 if [ $? == 1 ]; then
-	printf "${info}[${host}] Creating user for ${user}${reset}"
-	ssh -t ${login} "sudo adduser --home /home/${user} --ingroup ${group} ${user}" << EOF
+	${info} ${host} "Creating user for ${user}"
+	${login} -t "sudo adduser --home /home/${user} --ingroup ${group} ${user}" << EOF
 ${user}
 
 
@@ -39,7 +39,7 @@ EOF
 fi
 
 # Create password
-ssh -t ${login} "sudo passwd ${user}"
+${login} -t "sudo passwd ${user}"
 
-# Setup passwordless login for user upsource
-${run_dir}/raspi-configure-ssh.sh ${user} ${host}
+# Setup passwordless login
+${bin_dir}/raspi-configure-ssh.sh ${user} ${host}
