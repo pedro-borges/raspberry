@@ -19,15 +19,15 @@ fi
 
 # Check if run with sudo
 if [ $(id -u) != 0 ]; then
-    ${error} "Use sudo ${script_name} <volume>"
+    ${error} "Use sudo ${script_name} ${1}"
 	exit -1
 fi
 
-disk=$1
+disk=/dev/${1}
 
 # Check if volume is present
 if [ ! -b ${disk} ]; then
-    ${error} "Volume $1 does not exist"
+    ${error} "Block device ${disk} does not exist"
     exit -1
 fi
 
@@ -48,8 +48,13 @@ if [ ! -f /tmp/raspi/raspbian.img ]; then
 fi
 
 # Write image to volume
-${info} "Writing image to /dev/r$1 hit ctrl-t for progress"
-dd bs=1m if=/tmp/raspi/raspbian.img of=/dev/r$1 conv=sync
+if [ -c /dev/r${1} ]; then
+	${info} "Writing image to character device hit ctrl-t for progress"
+	dd bs=1m if=/tmp/raspi/raspbian.img of=/dev/r${1} conv=sync
+else
+	${info} "Writing image to block device hit ctrl-t for progress"
+	dd bs=1m if=/tmp/raspi/raspbian.img of=/dev/{$1} conv=sync
+fi
 
 # Mount the boot partition
 mount -t msdos ${disk}s1 /tmp/raspi/boot

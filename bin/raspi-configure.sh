@@ -27,6 +27,15 @@ if [ $? != 0 ]; then
     ${login} "sudo service networking restart"
 fi
 
+# Setup noip
+noip_url="http://pedrocborges:Ho97qi6Yu2kP@dynupdate.no-ip.com/nic/update?hostname=pedroborges.ddns.net"
+noip_cron="0 * * * * pi curl --user-agent 'curl/7.52.1 uk.pcb.services+noip@gmail.com' ${noip_url}"
+if [ ${login} "grep \"${noip_url}\" /etc/crontab" ]; then
+	${info} ${host} "Adding noip trigger to crontab on every hour"
+	${login} "sudo cp -n /etc/crontab /etc/crontab.bak"
+	echo ${noip_cron} | ${login} "sudo tee -a /etc/crontab"
+fi
+
 # Update packages
 cat ${root_dir}/etc/apt/sources.list | ${login} "sudo tee /etc/apt/sources.list > /dev/null"
 

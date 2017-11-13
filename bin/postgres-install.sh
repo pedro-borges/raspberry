@@ -3,37 +3,22 @@
 source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../conf/environment
 
 # Check parameters
-if [ ! $# -eq 2 ]; then
-    ${error} "Use ${script_name} <host> <volume>"
+if [ ! $# -eq 1 ]; then
+    ${error} "Use ${script_name} <host>"
     exit -1
 fi
 
 host=$1
-volume=/dev/$2
 login="ssh pi@${host}.local"
 postgres_version="9.6"
-data_directory=/data
 
-# Check if the external hd is in the fstab
-${login} "cat /etc/fstab" | grep -q "${volume}1"
-if [ $? != 0 ]; then
-	${info} ${host} "Mounting ${volume}1 under ${data_directory}"
-
-	# Add external hd to fstab
-    echo "${volume}1	${data_directory}	ext4	defaults	0	3" | ${login} "sudo tee -a /etc/fstab > /dev/null"
-
-    # Manually mount external hd
-	${login} "sudo mount /dev/sda1"
-fi
-
-# Stop postgres
-${info} ${host} "Installing PostgreSQL"
-${login} "sudo service postgresql stop"
+# Add postgres user
+${bin_dir}/raspi-add-user.sh postgres postgres postgres
 
 # Symbolic link postgres folder to external drive
-${login} "sudo mkdir -p ${data_directory}/postgres"
-${login} "sudo chmod 777 ${data_directory}/postgres"
-${login} "sudo ln -s /var/lib/postgres /data/postgres"
+${login} "sudo mkdir -p ${data_dir}/postgresql"
+${login} "sudo chown postgres:postgres ${data_dir}/postgresql"
+${login} "sudo ln -s ${data_dir}/postgresql /var/lib/postgresql"
 
 # Install PostgreSQL
 ${info} ${host} "Installing PostgreSQL"
@@ -53,9 +38,14 @@ if [ $? != 0 ]; then
 	cat ${pg_hba} | ${login} "sudo tee -a ${postgres_hba} > /dev/null"
 fi
 
-# Change permissions for postgres directory
-${login} "sudo chown postgres:postgres /data/postgres"
-${login} "sudo chmod 700 /data/postgres"
+# Setup password and passwordless login for postgres user
+ssh postgres@${host}.local -q -T -o numberOfPasswordPrompts=0 "exit"
+if [ $? != 0 ]; then
+	${info} ${host} "Setting up password for postgres user"
+	${login} -q -t "sudo passwd postgres"
+	${bin_dir}/raspi-configure-ssh.sh postgres ${host}
+fi
 
 # Start postgres
+${info} ${host} "Starting postgres"
 ${login} "sudo service postgresql start"

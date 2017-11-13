@@ -19,7 +19,7 @@ if [ ! -f ~/.ssh/id_rsa.pub ]; then
 fi
 
 key=$(cat ~/.ssh/id_rsa.pub | head -n 1)
- ${login} -q -T -o numberOfPasswordPrompts=0 "exit"
+${login} -q -T -o numberOfPasswordPrompts=0 "exit"
 if [ $? != 0 ]; then
 	${info} ${host} "Setting passwordless ssh login for ${login}"
 
