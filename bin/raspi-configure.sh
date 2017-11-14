@@ -15,8 +15,10 @@ login="ssh pi@${host}.local"
 ${bin_dir}/raspi-configure-ssh.sh pi ${host}
 
 # Add data directory
-${info} ${host} "Creating data directory in /data for external volume"
-${login} "sudo mkdir -p /data; sudo chmod 1777 /data"
+if [ -d "/data" ]; then
+	${info} ${host} "Creating data directory in /data for external volume"
+	${login} "sudo mkdir -p /data; sudo chmod 1777 /data"
+fi
 
 # Disable IPv6
 ${login} "cat /etc/sysctl.conf" | grep -q "$(head -n 3 ${root_dir}/etc/sysctl.conf | tail -n 1)"
@@ -30,7 +32,8 @@ fi
 # Setup noip
 noip_url="http://pedrocborges:Ho97qi6Yu2kP@dynupdate.no-ip.com/nic/update?hostname=pedroborges.ddns.net"
 noip_cron="0 * * * * pi curl --user-agent 'curl/7.52.1 uk.pcb.services+noip@gmail.com' ${noip_url}"
-if [ ${login} "grep \"${noip_url}\" /etc/crontab" ]; then
+${login} "grep \"${noip_url}\" /etc/crontab"
+if [ $? != 0 ]; then
 	${info} ${host} "Adding noip trigger to crontab on every hour"
 	${login} "sudo cp -n /etc/crontab /etc/crontab.bak"
 	echo ${noip_cron} | ${login} "sudo tee -a /etc/crontab"
@@ -46,10 +49,17 @@ ${info} ${host} "Upgrading packages"
 ${login} "sudo apt-get -o Acquire::ForceIPv4=true upgrade -y"
 
 # Install java 8
-${login} "java -version"
+#${login} "java -version"
+#if [ $? != 0 ]; then
+#	${info} ${host} "Installing JAVA"
+#	${host} "sudo apt-get -o Acquire::ForceIPv4=true install oracle-java8-jdk -y"
+#fi
+
+${login} "docker --version"
 if [ $? != 0 ]; then
-	${info} ${host} "Installing JAVA"
-	${host} "sudo apt-get -o Acquire::ForceIPv4=true install oracle-java8-jdk -y"
+	${info} ${host} "Installing docker"
+	${login} "curl -sSL https://get.docker.com | sh"
+	${login} "sudo usermod -aG docker pi"
 fi
 
 ${info} ${host} "Configuration finnished"

@@ -31,42 +31,49 @@ if [ ! -b ${disk} ]; then
     exit -1
 fi
 
-if [ ! -d /tmp/raspi/boot ]; then
-    mkdir -p /tmp/raspi/boot
+boot_mountpoint="/Volumes/boot"
+cd ${downloads_dir}
+if [ ! -d raspbian_boot ]; then
+	${info} "Creating mountpoint ${boot_mountpoint}"
+    mkdir -p ${boot_mountpoint}
+fi
+
+# Download latest image if not present
+${info} "Checking for latest raspberry pi image from https://downloads.raspberrypi.org/raspbian_lite_latest"
+wget -N -nv --show-progress https://downloads.raspberrypi.org/raspbian_lite_latest
+if [ "raspbian.img" -ot "raspbian_lite_latest" ]; then
+	${info} "Extracting archive"
+	rm -f raspbian.img
+    unzip -q raspbian_lite_latest
+    mv *raspbian*.img raspbian.img
+    touch raspbian.img
 fi
 
 # Unmount the volume
+${info} "Unmounting ${disk}"
 diskutil unmountDisk ${disk}
-
-# Download latest image if not present
-if [ ! -f /tmp/raspi/raspbian.img ]; then
-    ${info} "Downloading latest raspberry pi image from https://downloads.raspberrypi.org/raspbian_lite_latest"
-    wget -nv --show-progress https://downloads.raspberrypi.org/raspbian_lite_latest -O /tmp/raspi/raspbian.zip
-    unzip -q /tmp/raspi/raspbian.zip -d /tmp/raspi
-    mv /tmp/raspi/*raspbian*.img /tmp/raspi/raspbian.img
-    rm -f /tmp/raspi/raspbian.zip
-fi
 
 # Write image to volume
 if [ -c /dev/r${1} ]; then
-	${info} "Writing image to character device hit ctrl-t for progress"
-	dd bs=1m if=/tmp/raspi/raspbian.img of=/dev/r${1} conv=sync
+	${info} "Writing image to /dev/r${1} hit ctrl-t for progress"
+	dd bs=1m if=raspbian.img of=/dev/r${1} conv=sync
 else
-	${info} "Writing image to block device hit ctrl-t for progress"
-	dd bs=1m if=/tmp/raspi/raspbian.img of=/dev/{$1} conv=sync
+	if [ -b /dev/${1} ]; then
+		${info} "Writing image to /dev/${1} hit ctrl-t for progress"
+		dd bs=1m if=raspbian.img of=/dev/${1} conv=sync
+	fi
 fi
 
-# Mount the boot partition
-mount -t msdos ${disk}s1 /tmp/raspi/boot
-
 # Copy headless boot files
-${info} "Copying headless configuration files"
-cp -fv ${boot_dir}/* /tmp/raspi/boot
+${info} "Copying headless configuration to boot partition"
+cp -fv ${boot_dir}/* ${boot_mountpoint}
 
-# Unmount the volume
-diskutil unmountDisk ${disk}
+# Unmount boot partition
+${info} "Unmounting /dev/${disk}s1"
+diskutil unmountDisk /dev/${disk}s1
 
 # Eject the volume
+${info} "Ejecting disk"
 diskutil eject ${disk}
 
 ${info} "Installation complete:"

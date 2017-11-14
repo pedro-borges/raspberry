@@ -6,6 +6,7 @@ export conf_dir="${base_dir}/conf"
 export bin_dir="${base_dir}/bin"
 export boot_dir="${base_dir}/boot"
 export root_dir="${base_dir}/root"
+export downloads_dir="${base_dir}/downloads"
 
 # ANSI colours
 export black="\e[30m"
@@ -19,7 +20,7 @@ export white="\e[37m"
 export reset="\e[0m\n"
 
 # Log levels
-export debug="${bin_dir}/commands/log.sh ${black}"
+export debug="${bin_dir}/commands/log.sh ${blue}"
 export info="${bin_dir}/commands/log.sh ${green}"
 export warn="${bin_dir}/commands/log.sh ${yellow}"
 export error="${bin_dir}/commands/log.sh ${red}"
